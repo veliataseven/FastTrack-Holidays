@@ -1,0 +1,16 @@
+@startuml
+
+actor User
+entity "HolidaysApi" as Controller
+entity "HolidayServiceImpl" as Service
+entity "HolidayRepository" as Repository
+
+User -> Controller : Request to delete a holiday (DELETE /holidays/{id})
+Controller -> Service : deleteHoliday(UUID)
+Service -> Repository : existsById(UUID)
+Repository -> Service : boolean (exists)
+Service -> Repository : deleteById(UUID)
+Repository -> Service : void
+Controller -> User : Response (No Content)
+
+@enduml

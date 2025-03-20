@@ -1,0 +1,70 @@
+@startuml
+
+class HolidaysApi {
+    -HolidayService holidayService
+    +getHolidays() : ResponseEntity<List<HolidayDTO>>
+    +getHoliday(UUID holidayId) : ResponseEntity<HolidayDTO>
+    +createHoliday(HolidayDTO holidayDTO) : ResponseEntity<HolidayDTO>
+    +deleteHoliday(UUID holidayId) : ResponseEntity<Void>
+    +updateHoliday(UUID holidayId, HolidayDTO holidayDTO) : ResponseEntity<HolidayDTO>
+}
+
+class HolidayServiceImpl {
+    -HolidayRepository holidayRepository
+    +getAllHolidays() : List<HolidayDTO>
+    +getHolidayById(UUID holidayId) : HolidayDTO
+    +createHoliday(HolidayDTO holidayDTO) : HolidayDTO
+    +deleteHoliday(UUID holidayId) : void
+    +updateHoliday(UUID holidayId, HolidayDTO holidayDTO) : HolidayDTO
+    -validateHoliday(HolidayDTO holidayDTO) : void
+    -checkForHolidayOverlap(HolidayDTO holidayDTO, List<Holiday> existingHolidays) : void
+    -checkForGapBetweenHolidays(HolidayDTO holidayDTO, List<Holiday> existingHolidays) : void
+    -checkLeadTimeForHoliday(HolidayDTO holidayDTO) : void
+}
+
+class HolidayDTO {
+    +UUID holidayId
+    +String holidayLabel
+    +String employeeId
+    +OffsetDateTime startOfHoliday
+    +OffsetDateTime endOfHoliday
+    +HolidayStatus status
+}
+
+class Holiday {
+    +UUID holidayId
+    +String holidayLabel
+    +String employeeId
+    +OffsetDateTime startOfHoliday
+    +OffsetDateTime endOfHoliday
+    +HolidayStatus status
+}
+
+class HolidayRepository {
+    +List<Holiday> findAll() : List<Holiday>
+    +Optional<Holiday> findById(UUID holidayId) : Optional<Holiday>
+    +boolean existsById(UUID holidayId) : boolean
+    +void deleteById(UUID holidayId) : void
+    +List<Holiday> findByEmployeeId(String employeeId) : List<Holiday>
+}
+
+class HolidayStatus {
+    +DRAFT
+    +REQUESTED
+    +SCHEDULED
+    +ARCHIVED
+}
+
+class InvalidHolidayException {
+    +InvalidHolidayException(String message)
+    +InvalidHolidayException(String message, Throwable cause)
+}
+
+HolidaysApi --> HolidayServiceImpl : uses
+HolidayServiceImpl --> HolidayRepository : interacts with
+HolidayServiceImpl --> HolidayMapper : uses
+HolidayServiceImpl --> HolidayDTO : returns
+HolidayDTO --> Holiday : maps to
+HolidayRepository --> Holiday : manages
+
+@enduml

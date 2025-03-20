@@ -1,0 +1,27 @@
+@startuml
+
+actor User
+entity "HolidaysApi" as Controller
+entity "HolidayServiceImpl" as Service
+entity "HolidayRepository" as Repository
+entity "HolidayDTO" as DTO
+entity "Holiday" as Entity
+entity "HolidayMapper" as Mapper
+
+User -> Controller : Request to update a holiday (PUT /holidays/{id})
+Controller -> Service : updateHoliday(UUID, HolidayDTO)
+Service -> Service : validateHoliday(HolidayDTO)
+Service -> Repository : findById(UUID)
+Repository -> Service : Holiday (existing)
+Service -> Service : checkForHolidayOverlap(HolidayDTO, List<Holiday>)
+Service -> Service : checkForGapBetweenHolidays(HolidayDTO, List<Holiday>)
+Service -> Service : checkLeadTimeForHoliday(HolidayDTO)
+Service -> Mapper : toEntity(HolidayDTO)
+Mapper -> Entity : update Holiday entity
+Service -> Repository : save(Holiday)
+Repository -> Service : Holiday (updated)
+Service -> Mapper : toDTO(Holiday)
+Mapper -> DTO : convert updated Holiday to DTO
+Controller -> User : Response with updated HolidayDTO
+
+@enduml
